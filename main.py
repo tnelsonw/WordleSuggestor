@@ -5,7 +5,8 @@ letter_list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 
 
 color_list = ['green', 'yellow', 'blank', 'y', 'g', 'b']
 
-init_suggestions = ["irate", "sound", "graph", "teach", "words", "sloth", "reach", "itchy", "steal", "cheat", "meats"]
+init_suggestions = ["irate", "sound", "graph", "teach", "words", "sloth", "reach", "itchy", "steal", "cheat", "meats",
+                    "arise", "raise"]
 
 print_order = {0: "first", 1: "second", 2: "third", 3: "fourth", 4: "fifth"}
 
@@ -54,10 +55,8 @@ def load_input(all):
 
 def suggest_word(find, confirmed, remove, remaining_dict):
 
-    # try:
-    #     del remaining_dict['']
-    # except KeyError:
-    #     print("")
+    if "" in remaining_dict:
+        remaining_dict.remove("")
 
     for position, letter in confirmed.items():
         for guess in remaining_dict.copy():
@@ -96,11 +95,12 @@ def calculate_values(remaining_words, positions, find_pos, confirmed_pos):
         value_dictionary[word] = word_value
 
     # make value zero (first priority) if there is a yellow highlighted letter in a non-confirmed space
-    for word in remaining_words:
-        for pos in positions:
-            for letter in find_pos.values():
-                if word.find(letter, pos) not in list(confirmed_pos.keys()):
-                    value_dictionary[word] = 0
+    if find_pos != {}:
+        for word in remaining_words:
+            for pos in positions:
+                for letter in find_pos.values():
+                    if word.find(letter, pos) not in list(confirmed_pos.keys()):
+                        value_dictionary[word] = 0
 
     v_dict = {}
     for k, v in value_dictionary.items():
