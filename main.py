@@ -87,7 +87,7 @@ def check_duplicate(random_word):
     return False
 
 
-def calculate_values(remaining_words):
+def calculate_values(remaining_words, positions, find_pos, confirmed_pos):
     value_dictionary = {}
     for word in remaining_words:
         word_value = 0
@@ -95,11 +95,22 @@ def calculate_values(remaining_words):
             word_value += letter_values[letter]
         value_dictionary[word] = word_value
 
+    # make value zero (first priority) if there is a yellow highlighted letter in a non-confirmed space
+    for word in remaining_words:
+        for pos in positions:
+            for letter in find_pos.values():
+                if word.find(letter, pos) not in list(confirmed_pos.keys()):
+                    value_dictionary[word] = 0
+
     v_dict = {}
     for k, v in value_dictionary.items():
         v_dict[v] = [key for key, value in value_dictionary.items() if value == v]
 
     return dict(sorted(v_dict.items(), key=lambda item: item[0]))
+
+
+def find_rand_suggestion(suggestions):
+    return suggestions[list(suggestions.keys())[0]][randint(0, len(suggestions[list(suggestions.keys())[0]]) - 1)]
 
 
 def print_welcome():
@@ -134,7 +145,7 @@ if __name__ == '__main__':
         output = load_input(all_words)
         find_positions = {}
         confirmed_positions = {}
-        remove_positions ={}
+        remove_positions = {}
         for i in range(0, len(output)):
             if output[i][1] == 'y' or output[i][1] == 'yellow':
                 find_positions[i] = output[i][0]
@@ -143,13 +154,16 @@ if __name__ == '__main__':
             elif output[i][1] == 'b' or output[i][1] == 'blank':
                 remove_positions[i] = output[i][0]
 
-        all_words = suggest_word(find_positions, confirmed_positions, remove_positions, all_words)
-        new_suggestion = calculate_values(all_words)
+        to_remove = list(confirmed_positions.keys())
+        positions_to_check = [x for x in [0, 1, 2, 3, 4] if x not in to_remove]
 
-        rand_option = new_suggestion[list(new_suggestion.keys())[0]][randint(0, len(new_suggestion[list(new_suggestion.keys())[0]]) - 1)]
+        all_words = suggest_word(find_positions, confirmed_positions, remove_positions, all_words)
+        new_suggestion = calculate_values(all_words, positions_to_check, find_positions, confirmed_positions)
+
+        rand_option = find_rand_suggestion(new_suggestion)
 
         if round < 4 and check_duplicate(rand_option):
-            rand_option = new_suggestion[list(new_suggestion.keys())[0]][randint(0, len(new_suggestion[list(new_suggestion.keys())[0]]) - 1)]
+            rand_option = find_rand_suggestion(new_suggestion)
 
         if rand_option == "":
             print("There are no suggested words available. Please double check that you input your information "
