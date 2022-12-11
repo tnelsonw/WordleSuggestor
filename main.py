@@ -10,6 +10,11 @@ init_suggestions = ["irate", "sound", "graph", "teach", "words", "sloth", "reach
 print_order = {0: "first", 1: "second", 2: "third", 3: "fourth", 4: "fifth"}
 
 
+letter_values = {'a': 1, 'b': 3, 'c': 3, 'd': 2, 'e': 1, 'f': 4, 'g': 2, 'h': 4, 'i': 1, 'j': 8, 'k': 5, 'l': 1, 'm': 3,
+                 'n': 1, 'o': 1, 'p': 3, 'q': 10, 'r': 1, 's': 1, 't': 1, 'u': 1, 'v': 4, 'w': 4, 'x': 8, 'y': 4,
+                 'z': 10}
+
+
 def load_dictionary():
     init_dict = []
     with open("dictionary.txt", "r") as file:
@@ -47,7 +52,12 @@ def load_input(all):
     return output
 
 
-def suggest_word(find, confirmed, remaining_dict):
+def suggest_word(find, confirmed, remove, remaining_dict):
+
+    # try:
+    #     del remaining_dict['']
+    # except KeyError:
+    #     print("")
 
     for position, letter in confirmed.items():
         for guess in remaining_dict.copy():
@@ -61,6 +71,11 @@ def suggest_word(find, confirmed, remaining_dict):
             elif letter not in guess:
                 remaining_dict.remove(guess)
 
+    for position, letter in remove.items():
+        for guess in remaining_dict.copy():
+            if letter in guess and letter not in confirmed.values() and letter not in find.values():
+                remaining_dict.remove(guess)
+
     return remaining_dict
 
 
@@ -70,6 +85,21 @@ def check_duplicate(random_word):
         if random_word.count(character) > 1:
             return True
     return False
+
+
+def calculate_values(remaining_words):
+    value_dictionary = {}
+    for word in remaining_words:
+        word_value = 0
+        for letter in word:
+            word_value += letter_values[letter]
+        value_dictionary[word] = word_value
+
+    v_dict = {}
+    for k, v in value_dictionary.items():
+        v_dict[v] = [key for key, value in value_dictionary.items() if value == v]
+
+    return dict(sorted(v_dict.items(), key=lambda item: item[0]))
 
 
 def print_welcome():
@@ -104,21 +134,22 @@ if __name__ == '__main__':
         output = load_input(all_words)
         find_positions = {}
         confirmed_positions = {}
+        remove_positions ={}
         for i in range(0, len(output)):
-            if output[i][1] == 'b' or output[i][1] == 'blank':
-                for word in all_words.copy():
-                    if output[i][0] in word:
-                        all_words.remove(word)
-            elif output[i][1] == 'y' or output[i][1] == 'yellow':
+            if output[i][1] == 'y' or output[i][1] == 'yellow':
                 find_positions[i] = output[i][0]
             elif output[i][1] == 'g' or output[i][1] == 'green':
                 confirmed_positions[i] = output[i][0]
+            elif output[i][1] == 'b' or output[i][1] == 'blank':
+                remove_positions[i] = output[i][0]
 
-        all_words = suggest_word(find_positions, confirmed_positions, all_words)
-        rand_option = all_words[randint(0, len(all_words) - 1)]
+        all_words = suggest_word(find_positions, confirmed_positions, remove_positions, all_words)
+        new_suggestion = calculate_values(all_words)
 
-        if check_duplicate(rand_option):
-            rand_option = all_words[randint(0, len(all_words) - 1)]
+        rand_option = new_suggestion[list(new_suggestion.keys())[0]][randint(0, len(new_suggestion[list(new_suggestion.keys())[0]]) - 1)]
+
+        if round < 4 and check_duplicate(rand_option):
+            rand_option = new_suggestion[list(new_suggestion.keys())[0]][randint(0, len(new_suggestion[list(new_suggestion.keys())[0]]) - 1)]
 
         if rand_option == "":
             print("There are no suggested words available. Please double check that you input your information "
@@ -133,7 +164,7 @@ if __name__ == '__main__':
             print("Please type '1' or '2': ")
             a = input()
         if a == '2':
-            print(f"Congratulations! You got the Wordle after {round + 1} tries!")
+            print(f"Congratulations! You got the Wordle after {round} tries!")
             break
         if round == 6:
             print("You did not get the Wordle :(")
