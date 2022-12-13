@@ -86,7 +86,7 @@ def check_duplicate(random_word):
     return False
 
 
-def calculate_values(remaining_words, positions, find_pos, confirmed_pos):
+def calculate_values(remaining_words, positions=[], find_pos={}, confirmed_pos={}):
     value_dictionary = {}
     for word in remaining_words:
         word_value = 0
@@ -154,11 +154,14 @@ if __name__ == '__main__':
             elif output[i][1] == 'b' or output[i][1] == 'blank':
                 remove_positions[i] = output[i][0]
 
-        to_remove = list(confirmed_positions.keys())
-        positions_to_check = [x for x in [0, 1, 2, 3, 4] if x not in to_remove]
+        pos_to_remove = list(confirmed_positions.keys())
+        positions_to_check = [x for x in [0, 1, 2, 3, 4] if x not in pos_to_remove]
 
         all_words = suggest_word(find_positions, confirmed_positions, remove_positions, all_words)
         new_suggestion = calculate_values(all_words, positions_to_check, find_positions, confirmed_positions)
+
+        if new_suggestion[0]:
+            new_suggestion = calculate_values(new_suggestion[0])
 
         rand_option = find_rand_suggestion(new_suggestion)
 
