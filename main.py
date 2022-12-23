@@ -5,10 +5,12 @@ letter_list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 
 
 color_list = ['green', 'yellow', 'blank', 'y', 'g', 'b']
 
-init_suggestions = ["irate", "sound", "graph", "teach", "words", "sloth", "reach", "itchy", "steal", "cheat", "meats",
-                    "arise", "raise"]
+init_suggestions5 = ["irate", "sound", "graph", "teach", "words", "sloth", "reach", "itchy", "steal", "cheat", "meats",
+                     "arise", "raise"]
 
-print_order = {0: "first", 1: "second", 2: "third", 3: "fourth", 4: "fifth"}
+init_suggestions6 = ["satire", "aspire", "mouthy", "plough", "amends", "tricky", "wavier"]
+
+print_order = {0: "first", 1: "second", 2: "third", 3: "fourth", 4: "fifth", 5: "sixth"}
 
 
 letter_values = {'a': 1, 'b': 3, 'c': 3, 'd': 2, 'e': 1, 'f': 4, 'g': 2, 'h': 4, 'i': 1, 'j': 8, 'k': 5, 'l': 1, 'm': 3,
@@ -16,9 +18,10 @@ letter_values = {'a': 1, 'b': 3, 'c': 3, 'd': 2, 'e': 1, 'f': 4, 'g': 2, 'h': 4,
                  'z': 10}
 
 
-def load_dictionary():
+def load_dictionary(number):
     init_dict = []
-    with open("dictionary.txt", "r") as file:
+    file_name = "dictionary" + str(number) + ".txt"
+    with open(file_name, "r") as file:
         line = "line"
         while line != '':  # EOF
             line = file.readline().rstrip()
@@ -26,11 +29,18 @@ def load_dictionary():
     return init_dict
 
 
-def load_input(all):
+def get_suggestion(num):
+    if num == 5:
+        return init_suggestions5[randint(0, len(init_suggestions5) - 1)]
+    elif num == 6:
+        return init_suggestions6[randint(0, len(init_suggestions6) - 1)]
+
+
+def load_input(all, num):
     output = {}
     word_guess = ""
     while True:
-        for i in range(0, 5):
+        for i in range(0, num):
             print(f'Input the {print_order[i]} letter of your guess: ')
             letter = input().lower()
             while letter not in letter_list:
@@ -114,14 +124,23 @@ def find_rand_suggestion(suggestions):
 
 
 def print_welcome():
-    print("Welcome to the Wordle Suggestor!\nFollow the prompts for your word suggestion!")
+    print("Welcome to the Wordle Suggestor!\n"
+          "Please enter the number of letters you would like for your wordle!\n"
+          "Valid number of letters are 5 and 6.\n"
+          "Afterwards, please follow the prompts for your word suggestion!")
 
 
 if __name__ == '__main__':
 
     print_welcome()
-    all_words = load_dictionary()
-    suggestion = init_suggestions[randint(0, len(init_suggestions) - 1)]
+
+    num_letters = int(input())
+    while num_letters != 5 and num_letters != 6:
+        print("Please input a valid number of letters. Either 5 or 6.\n")
+        num_letters = int(input())
+
+    all_words = load_dictionary(num_letters)
+    suggestion = get_suggestion(num_letters)
 
     print(f'Try this word for your initial guess: {suggestion}')
     print("Type '1' to continue. Or, for a different initial suggestion, type '2'.")
@@ -133,7 +152,7 @@ if __name__ == '__main__':
             option = input()
 
         if option == '2':
-            suggestion = init_suggestions[randint(0, len(init_suggestions) - 1)]
+            suggestion = get_suggestion(num_letters)
 
         print(f'Try this word for your initial guess: {suggestion}')
         print("Type '1' to continue. Or, for a different initial suggestion, type '2'.")
@@ -142,7 +161,7 @@ if __name__ == '__main__':
     round = 0
     while round < 6:
 
-        output = load_input(all_words)
+        output = load_input(all_words, num_letters)
         find_positions = {}
         confirmed_positions = {}
         remove_positions = {}
@@ -155,12 +174,12 @@ if __name__ == '__main__':
                 remove_positions[i] = output[i][0]
 
         pos_to_remove = list(confirmed_positions.keys())
-        positions_to_check = [x for x in [0, 1, 2, 3, 4] if x not in pos_to_remove]
+        positions_to_check = [x for x in range(0, num_letters) if x not in pos_to_remove]
 
         all_words = suggest_word(find_positions, confirmed_positions, remove_positions, all_words)
         new_suggestion = calculate_values(all_words, positions_to_check, find_positions, confirmed_positions)
 
-        if new_suggestion[0]:
+        if find_positions != {}:
             new_suggestion = calculate_values(new_suggestion[0])
 
         rand_option = find_rand_suggestion(new_suggestion)
@@ -173,17 +192,26 @@ if __name__ == '__main__':
                   "correctly.")
             exit(0)
 
-        print("Type '1' to continue to the next round or type '2' if you got the wordle!")
-
+        print("Type '1' to continue to the next round or type '2' if you got the wordle! Type 3 to get a new "
+              "suggested word.")
+        print(f'Your suggested next word is {rand_option}. ')
         round += 1
         a = input()
-        while a != '1' and a != '2':
-            print("Please type '1' or '2': ")
+        while a != '1' and a != '2' and a != '3':
+            print("Please type '1' or '2' or '3': ")
             a = input()
         if a == '2':
             print(f"Congratulations! You got the Wordle after {round} tries!")
             break
+        while a == '3':
+            rand_option = find_rand_suggestion(new_suggestion)
+            print("Type '1' to continue to the next round or type '2' if you got the wordle! Type 3 to get a new "
+                  "suggested word.")
+            print(f'Your suggested next word is {rand_option}. ')
+            a = input()
+            while a != '1' and a != '2' and a != '3':
+                print("Please type '1' or '2' or '3': ")
+                a = input()
         if round == 6:
             print("You did not get the Wordle :(")
 
-        print(f'Your suggested next word is {rand_option}. ')
