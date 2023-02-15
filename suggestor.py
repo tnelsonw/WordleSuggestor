@@ -92,7 +92,7 @@ def suggest_word(find: dict, confirmed: dict, remove: dict, remaining_words: Lis
             if word.find(letter, position) != position:
                 remaining_words.remove(word)
 
-    # remove the word if the letter found (yellow) is at that same position (it should be elsewhere in the word
+    # remove the word if the letter found (yellow) is at that same position (it should be elsewhere in the word)
     # also remove if the word does not have that letter
     for position, letter in find.items():
         for word in remaining_words.copy():
@@ -109,8 +109,8 @@ def suggest_word(find: dict, confirmed: dict, remove: dict, remaining_words: Lis
             p = word.find(letter, position)
             if p == position:
                 remaining_words.remove(word)
-                # for the rest of the word, requires more checks (could be yellow or green in other positions)
-                # match the position to confirmed positions here
+
+            # for the rest of the word, requires more checks (could be yellow or green in other positions)
             elif p in remove.keys():
                 remaining_words.remove(word)
             elif letter in word and letter not in confirmed.values() and letter not in find.values():
