@@ -106,7 +106,7 @@ def suggest_word(find: dict, confirmed: dict, remove: dict, remaining_words: Lis
         for word in remaining_words.copy():
 
             # remove the word if the letter matched the letter at the blank position
-            p = word.find(letter, position)
+            p = word.find(letter, position, position + 1)
             if p == position:
                 remaining_words.remove(word)
 
@@ -115,6 +115,11 @@ def suggest_word(find: dict, confirmed: dict, remove: dict, remaining_words: Lis
                 remaining_words.remove(word)
             elif letter in word and letter not in confirmed.values() and letter not in find.values():
                 remaining_words.remove(word)
+            else:
+                for pos in [word.find(letter, x, x+1) for x in remove.keys() if word.find(letter, x, x+1) != -1]:
+                    if word[pos] in remove.values():
+                        remaining_words.remove(word)
+
     return remaining_words
 
 
@@ -255,3 +260,9 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# fix printing at end
+# 3 for new word
+# then 2 for done with Wordle
+# use case that Allison showed me
+
