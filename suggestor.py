@@ -1,4 +1,6 @@
-
+"""
+Programmed by tnelsonw for fun.
+"""
 from random import randint
 from typing import List
 from collections import Counter
@@ -116,10 +118,10 @@ def suggest_word(find: dict, confirmed: dict, remove: dict, remaining_words: Lis
             elif letter in word and letter not in confirmed.values() and letter not in find.values():
                 remaining_words.remove(word)
             else:
+                # for when letters are green and blank but at a different blank position
                 for pos in [word.find(letter, x, x+1) for x in remove.keys() if word.find(letter, x, x+1) != -1]:
                     if word[pos] in remove.values():
                         remaining_words.remove(word)
-
     return remaining_words
 
 
@@ -239,12 +241,6 @@ def main():
         while a != '1' and a != '2' and a != '3':
             print("Please type '1' or '2' or '3': ")
             a = input()
-        if a == '2':
-            if round == 1:
-                print("Congratulations! You got the Wordle after 1 try!")
-            else:
-                print(f"Congratulations! You got the Wordle after {round} tries!")
-            break
         while a == '3':
             rand_option = find_rand_suggestion(new_suggestions)
             print("Type '1' to continue to the next round or type '2' if you got the wordle! Type 3 to get a new "
@@ -254,15 +250,17 @@ def main():
             while a != '1' and a != '2' and a != '3':
                 print("Please type '1' or '2' or '3': ")
                 a = input()
+        if a == '2':
+            if round == 1:
+                print("Congratulations! You got the Wordle after 1 try!")
+            else:
+                print(f"Congratulations! You got the Wordle after {round} tries!")
+            break
+
         if round == num_letters:
             print("You did not get the Wordle :(")
 
 
 if __name__ == '__main__':
     main()
-
-# fix printing at end
-# 3 for new word
-# then 2 for done with Wordle
-# use case that Allison showed me
 
