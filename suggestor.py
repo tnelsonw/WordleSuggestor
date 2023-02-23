@@ -129,6 +129,7 @@ def find_rand_suggestion(suggestions: List[str]) -> str:
     return suggestions[randint(0, len(suggestions)-1)]
 
 
+# noinspection PyDefaultArgument
 def calculate_values(remaining_words: List[str], positions_to_check: List[int] = [], find_pos: dict = {},
                      confirmed_pos: dict = {}) -> List[str]:
     """Calculate total point values for each remaining word based on the letter_values dictionary.
@@ -263,4 +264,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
