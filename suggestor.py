@@ -16,7 +16,7 @@ init_suggestions6 = ["satire", "aspire", "mouthy", "plough", "amends", "tricky",
 
 print_order = {0: "first", 1: "second", 2: "third", 3: "fourth", 4: "fifth", 5: "sixth"}
 
-# based on commonality of each letter https://www3.nd.edu/~busiforc/handouts/cryptography/letterfrequencies.html
+# loosely based on commonality of each letter https://www3.nd.edu/~busiforc/handouts/cryptography/letterfrequencies.html
 letter_values = {'a': 1, 'b': 3, 'c': 1, 'd': 2, 'e': 1, 'f': 4, 'g': 3, 'h': 3, 'i': 1, 'j': 10, 'k': 5, 'l': 1,
                  'm': 2, 'n': 1, 'o': 1, 'p': 2, 'q': 10, 'r': 1, 's': 1, 't': 1, 'u': 2, 'v': 5, 'w': 4, 'x': 8,
                  'y': 4, 'z': 10}
@@ -126,6 +126,9 @@ def suggest_word(find: dict, confirmed: dict, remove: dict, remaining_words: Lis
 
 
 def find_rand_suggestion(suggestions: List[str]) -> str:
+    """
+    Simply gets a random word from the 'most likely' list of words, or words with the lowest score
+    """
     return suggestions[randint(0, len(suggestions)-1)]
 
 

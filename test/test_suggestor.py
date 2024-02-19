@@ -3,6 +3,7 @@ import unittest.mock
 import sys
 import os
 import io
+import suggestor
 
 # getting the name of the directory
 # where this file is present.
@@ -15,7 +16,6 @@ parent = os.path.dirname(current)
 # adding the parent directory to
 # the sys.path.
 sys.path.append(parent)
-import suggestor
 
 
 class TestSuggestor(unittest.TestCase):
@@ -41,7 +41,8 @@ class TestSuggestor(unittest.TestCase):
         self.assertEqual(mock_stdout.getvalue(), expected_output)
 
     def test_print_init_guess(self):
-        expected = "Try this word for your initial guess: words\nType '1' to continue. Or, for a different initial suggestion, type '2'.\n"
+        expected = "Try this word for your initial guess: words\nType '1' to continue. Or, for a different initial "\
+                   "suggestion, type '2'.\n"
         self.assert_stdout("words", expected)
 
     def test_load_input5(self):
