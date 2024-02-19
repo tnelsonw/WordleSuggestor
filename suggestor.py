@@ -120,7 +120,7 @@ def suggest_word(find: dict, confirmed: dict, remove: dict, remaining_words: Lis
             else:
                 # for when letters are green and blank but at a different blank position
                 for pos in [word.find(letter, x, x+1) for x in remove.keys() if word.find(letter, x, x+1) != -1]:
-                    if word[pos] in remove.values():
+                    if word[pos] in remove.values() and word[pos] == remove[pos]:
                         remaining_words.remove(word)
     return remaining_words
 

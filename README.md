@@ -28,7 +28,7 @@ were blank, you would type:
 
 Note that you can replace "yellow" with "y", "green" with "g", and "blank" with "b" for the same results. 
 
-The program with then systematically eliminate words from the dictionary that are impossible based on the
+The program will then systematically eliminate words from the dictionary that are impossible based on the
 letters and color values that were inputted and provide you a suggested word.
 
 ## Other Notes
