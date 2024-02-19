@@ -16,10 +16,10 @@ init_suggestions6 = ["satire", "aspire", "mouthy", "plough", "amends", "tricky",
 
 print_order = {0: "first", 1: "second", 2: "third", 3: "fourth", 4: "fifth", 5: "sixth"}
 
-# based on commonality of each letter
-letter_values = {'a': 1, 'b': 3, 'c': 3, 'd': 2, 'e': 1, 'f': 4, 'g': 2, 'h': 4, 'i': 1, 'j': 8, 'k': 5, 'l': 1, 'm': 3,
-                 'n': 1, 'o': 1, 'p': 3, 'q': 10, 'r': 1, 's': 1, 't': 1, 'u': 1, 'v': 4, 'w': 4, 'x': 8, 'y': 4,
-                 'z': 10}
+# based on commonality of each letter https://www3.nd.edu/~busiforc/handouts/cryptography/letterfrequencies.html
+letter_values = {'a': 1, 'b': 3, 'c': 1, 'd': 2, 'e': 1, 'f': 4, 'g': 3, 'h': 3, 'i': 1, 'j': 10, 'k': 5, 'l': 1,
+                 'm': 2, 'n': 1, 'o': 1, 'p': 2, 'q': 10, 'r': 1, 's': 1, 't': 1, 'u': 2, 'v': 5, 'w': 4, 'x': 8,
+                 'y': 4, 'z': 10}
 
 
 class Color(Enum):
@@ -158,7 +158,7 @@ def calculate_values(remaining_words: List[str], positions_to_check: List[int] =
                         value_dictionary[word] -= letter_values[letter]
 
     # switch keys and values so that each total score has a list of valid words
-    # {5: ['raise', 'arise', 'irate'], 7: ['meats', 'beats']...etc}
+    # {5: ['raise', 'arise', 'irate'], 7: ['heats', 'beats']...etc}
     v_dict = {}
     for k, v in value_dictionary.items():
         v_dict[v] = [key for key, value in value_dictionary.items() if value == v]
@@ -172,7 +172,7 @@ def print_init_guess(init_suggestion: str) -> None:
     print("Type '1' to continue. Or, for a different initial suggestion, type '2'.")
 
 
-def print_welcome():
+def print_welcome() -> None:
     print("Welcome to the Wordle Suggestor!\n"
           "Please enter the number of letters you would like for your wordle!\n"
           "Valid number of letters are 5 and 6.\n"
@@ -232,25 +232,46 @@ def main():
                   "correctly.")
             exit(0)
 
+        options_text = ("Type '1' to continue to the next round or type '2' if you got the wordle! Type 3 to get a new "
+                        "suggested word. Type 4 only if the suggested word is not in the Wordle dictionary.")
         print(f"There are {len(all_words)} possible words remaining.")
-        print("Type '1' to continue to the next round or type '2' if you got the wordle! Type 3 to get a new "
-              "suggested word.")
+        print(options_text)
         print(f'Your suggested next word is {rand_option}. ')
 
         round += 1
         a = input()
-        while a != '1' and a != '2' and a != '3':
-            print("Please type '1' or '2' or '3': ")
+        while a != '1' and a != '2' and a != '3' and a != '4':
+            print("Please type '1' or '2' or '3' or '4': ")
             a = input()
-        while a == '3':
-            rand_option = find_rand_suggestion(new_suggestions)
-            print("Type '1' to continue to the next round or type '2' if you got the wordle! Type 3 to get a new "
-                  "suggested word.")
-            print(f'Your suggested next word is {rand_option}. ')
-            a = input()
-            while a != '1' and a != '2' and a != '3':
-                print("Please type '1' or '2' or '3': ")
+        while a == '3' or a == '4':
+            if a == '3':
+                # get a new suggested word (doesn't always get a different word)
+                rand_option = find_rand_suggestion(new_suggestions)
+                print(options_text)
+                print(f'Your suggested next word is {rand_option}.')
                 a = input()
+                while a != '1' and a != '2' and a != '3' and a != '4':
+                    print("Please type '1' or '2' or '3' or '4': ")
+                    a = input()
+            else:
+                # this dictionary does not match with Wordle's dictionary
+                all_words.remove(rand_option)  # remove the current suggestion from the list of suggestions
+
+                # recalculate the suggestions
+                new_suggestions = calculate_values(all_words, positions_to_check, find_positions, confirmed_positions)
+                if len(new_suggestions) == 0:
+                    print("There are no suggested words available. Please double check that you input your information "
+                          "correctly.")
+                    exit(0)
+                rand_option = find_rand_suggestion(new_suggestions)
+                print(options_text)
+                print(f'Your recalculated suggested word is {rand_option}.')
+
+                a = input()
+                # how to check for options 3 here
+                while a != '1' and a != '2' and a != '3' and a != '4':
+                    print("Please type '1' or '2' or '3' or '4': ")
+                    a = input()
         if a == '2':
             if round == 1:
                 print("Congratulations! You got the Wordle after 1 try!")
