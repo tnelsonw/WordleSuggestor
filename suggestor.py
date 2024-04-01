@@ -2,9 +2,10 @@
 Programmed by tnelsonw for fun.
 """
 from random import randint
-from typing import List
+from typing import List, NoReturn
 from collections import Counter
 from enum import Enum
+import tkinter as tk
 
 letter_list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
                'v', 'w', 'x', 'y', 'z']
@@ -170,20 +171,47 @@ def calculate_values(remaining_words: List[str], positions_to_check: List[int] =
     return v_dict[min(v_dict.keys())]
 
 
-def print_init_guess(init_suggestion: str) -> None:
+def print_init_guess(init_suggestion: str) -> NoReturn:
     print(f'Try this word for your initial guess: {init_suggestion}')
     print("Type '1' to continue. Or, for a different initial suggestion, type '2'.")
 
 
-def print_welcome() -> None:
+def print_welcome() -> NoReturn:
     print("Welcome to the Wordle Suggestor!\n"
           "Please enter the number of letters you would like for your wordle!\n"
           "Valid number of letters are 5 and 6.\n"
           "Afterwards, please follow the prompts for your word suggestion!")
 
 
+def gui_add_row(gui, row_num: int) -> NoReturn:
+    e1 = tk.Entry(gui)
+    e2 = tk.Entry(gui)
+    e3 = tk.Entry(gui)
+    e4 = tk.Entry(gui)
+    e5 = tk.Entry(gui)
+
+    e1.grid(row=row_num, column=1)
+    e2.grid(row=row_num, column=2)
+    e3.grid(row=row_num, column=3)
+    e4.grid(row=row_num, column=4)
+    e5.grid(row=row_num, column=5)
+
+    button = tk.Button(gui, text="Submit", width=8, command=print_welcome, background='green')  # TODO change command
+    button.grid(row=row_num, column=6)
+
+
 def main():
     print_welcome()
+
+    # gui section
+    gui = tk.Tk()
+    gui.title("Wordle Suggestor")
+
+    gui_add_row(gui, 0)
+
+
+    gui.mainloop()
+    # end gui section
 
     num_letters = int(input())
     while num_letters != 5 and num_letters != 6:
