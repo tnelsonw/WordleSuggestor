@@ -183,57 +183,7 @@ def print_welcome() -> NoReturn:
           "Afterwards, please follow the prompts for your word suggestion!")
 
 
-def gui_add_row(gui, row_num: int) -> NoReturn:
-    e1 = tk.Entry(gui)
-    e2 = tk.Entry(gui)
-    e3 = tk.Entry(gui)
-    e4 = tk.Entry(gui)
-    e5 = tk.Entry(gui)
-
-    e1.grid(row=row_num, column=1)
-    e2.grid(row=row_num, column=2)
-    e3.grid(row=row_num, column=3)
-    e4.grid(row=row_num, column=4)
-    e5.grid(row=row_num, column=5)
-
-    button = tk.Button(gui, text="Submit", width=8, command=print_welcome, background='green')  # TODO change command
-    button.grid(row=row_num, column=6)
-
-
-def main():
-    print_welcome()
-
-    # gui section
-    gui = tk.Tk()
-    gui.title("Wordle Suggestor")
-
-    gui_add_row(gui, 0)
-
-
-    gui.mainloop()
-    # end gui section
-
-    num_letters = int(input())
-    while num_letters != 5 and num_letters != 6:
-        print("Please input a valid number of letters. Either 5 or 6.\n")
-        num_letters = int(input())
-
-    all_words = load_dictionary(num_letters)
-    initial_suggestion = get_init_suggestion(num_letters)
-
-    print_init_guess(initial_suggestion)
-
-    option = input()
-    while option != '1':
-        while option != '1' and option != '2':
-            print("Please type '1' or '2': ")
-            option = input()
-
-        if option == '2':
-            initial_suggestion = get_init_suggestion(num_letters)
-            print_init_guess(initial_suggestion)
-            option = input()
-
+def process(all_words, num_letters: int):
     round = 0
     while round < num_letters + 1:
 
@@ -312,6 +262,57 @@ def main():
 
         if round == num_letters:
             print("You did not get the Wordle :(")
+
+
+def gui_add_row(gui, row_num: int, all_words, num_letters: int) -> NoReturn:
+    e1 = tk.Entry(gui)
+    e2 = tk.Entry(gui)
+    e3 = tk.Entry(gui)
+    e4 = tk.Entry(gui)
+    e5 = tk.Entry(gui)
+
+    e1.grid(row=row_num, column=1)
+    e2.grid(row=row_num, column=2)
+    e3.grid(row=row_num, column=3)
+    e4.grid(row=row_num, column=4)
+    e5.grid(row=row_num, column=5)
+
+    button = tk.Button(gui, text="Submit", width=8, command=process(all_words, num_letters), background='green')
+    button.grid(row=row_num, column=6)
+
+
+def main():
+    print_welcome()
+
+    num_letters = int(input())
+    while num_letters != 5 and num_letters != 6:
+        print("Please input a valid number of letters. Either 5 or 6.\n")
+        num_letters = int(input())
+
+    all_words = load_dictionary(num_letters)
+    initial_suggestion = get_init_suggestion(num_letters)
+
+    print_init_guess(initial_suggestion)
+
+    option = input()
+    while option != '1':
+        while option != '1' and option != '2':
+            print("Please type '1' or '2': ")
+            option = input()
+
+        if option == '2':
+            initial_suggestion = get_init_suggestion(num_letters)
+            print_init_guess(initial_suggestion)
+            option = input()
+
+    # gui section
+    gui = tk.Tk()
+    gui.title("Wordle Suggestor")
+
+    gui_add_row(gui, 0)
+
+    gui.mainloop()
+    # end gui section
 
 
 if __name__ == '__main__':
