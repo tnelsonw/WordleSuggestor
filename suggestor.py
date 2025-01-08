@@ -204,7 +204,7 @@ class Wordle_Suggestor:
               "Afterwards, please follow the prompts for your word suggestion!")
 
 
-    def load_gui_input(self):
+    def load_gui_input(self, num_letters: int):
         """
         Load the input from the GUI
         :return: a dictionary with the 0-num position as the keys, and a list containing the color of the guess followed
@@ -219,7 +219,8 @@ class Wordle_Suggestor:
                 letter: str = c.get()
 
             elif type(c) == tk.OptionMenu:
-                color: str = self.all_vars[(self.counter + 1) * (int(k/2) - 1)].get().lower()
+                z: int = (int(k/2) - 1) + (self.counter * num_letters)
+                color: str = self.all_vars[z].get().lower()
                 next = True
 
             if next:
@@ -234,7 +235,7 @@ class Wordle_Suggestor:
         # while round < num_letters + 1:
 
         # guess_output = self.load_input(all_words, num_letters)
-        guess_output = self.load_gui_input()
+        guess_output = self.load_gui_input(num_letters)
         find_positions = {}
         confirmed_positions = {}
         remove_positions = {}
