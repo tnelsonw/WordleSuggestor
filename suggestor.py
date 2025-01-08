@@ -287,7 +287,14 @@ class Wordle_Suggestor:
 
         # add button for new suggestion
         suggestion_button = tk.Button(self.frame, text="New Suggestion", width=15, command=new_suggestion, background='yellow')
-        suggestion_button.grid(row=6, column = 5)
+        suggestion_button.grid(row=6, column=5)
+
+        def completed_wordle():
+            self.info_label.after(1, self.info_label.destroy())
+            self.set_info_label(f"Congratulations!\nYou got the Wordle!")
+
+        completed_button = tk.Button(self.frame, text="Got the Wordle!", width=15, command=completed_wordle, background='lightgreen')
+        completed_button.grid(row=6, column=7)
 
         # round += 1
         # a = input()
@@ -311,7 +318,7 @@ class Wordle_Suggestor:
         #         # recalculate the suggestions
         #         new_suggestions = self.calculate_values(all_words, positions_to_check, find_positions, confirmed_positions)
         #         if len(new_suggestions) == 0:
-        #             print("There are no suggested words available. Please double check that you input your information "
+        #             print("There are no suggested words available. Please double-check that you input your information "
         #                   "correctly.")
         #             exit(0)
         #         rand_option = self.find_rand_suggestion(new_suggestions)
@@ -340,8 +347,6 @@ class Wordle_Suggestor:
         for i in range(1, num_letters*2 + 1, 2):
             e = tk.Entry(self.frame)
             e.grid(row=row_num, column=i)
-            print(e.cget('background'))
-            print(e.cget('bg'))
 
             variable = tk.StringVar(self.frame)
             variable.set("Blank")  # default value
@@ -356,7 +361,6 @@ class Wordle_Suggestor:
 
                 for k, c in enumerate(self.frame.grid_slaves(row_num)):
                     if type(c) == tk.Entry and str(c).translate(self.translation_table) == str(var_num):
-                        color: str = "white"
                         match var:
                             case 'Blank':
                                 color = "gray"
@@ -373,9 +377,6 @@ class Wordle_Suggestor:
                     #     color: str = c
 
             def lam(*args):
-                print(args)
-                print(args[0])
-                print(args[0][-1])
                 var_num: int = int(args[0].translate(self.translation_table))
                 selection_changed(self.all_vars[var_num].get(), var_num + 1)
 
