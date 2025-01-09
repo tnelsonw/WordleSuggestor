@@ -204,22 +204,25 @@ class Wordle_Suggestor:
               "Afterwards, please follow the prompts for your word suggestion!")
 
 
-    def load_gui_input(self, num_letters: int):
+    def load_gui_input(self, num_letters: int, row: int | None = None):
         """
         Load the input from the GUI
         :return: a dictionary with the 0-num position as the keys, and a list containing the color of the guess followed
         by the letter of the guess at that position.
         """
+        if row is None:
+            row = self.counter
+
         options = {}
         next: bool = False
         position: int = 0
-        for k, c in enumerate(reversed(self.frame.grid_slaves(self.counter))):
+        for k, c in enumerate(reversed(self.frame.grid_slaves(row))):
 
             if type(c) == tk.Entry:
                 letter: str = c.get()
 
             elif type(c) == tk.OptionMenu:
-                z: int = (int(k/2) - 1) + (self.counter * num_letters)
+                z: int = (int(k/2) - 1) + (row * num_letters)
                 color: str = self.all_vars[z].get().lower()
                 next = True
 
@@ -230,12 +233,12 @@ class Wordle_Suggestor:
         return options
 
 
-    def process(self, all_words: List[str], num_letters: int):
+    def process(self, all_words: List[str], num_letters: int, row: int | None = None):
         # round = 0
         # while round < num_letters + 1:
 
         # guess_output = self.load_input(all_words, num_letters)
-        guess_output = self.load_gui_input(num_letters)
+        guess_output = self.load_gui_input(num_letters, row)
         find_positions = {}
         confirmed_positions = {}
         remove_positions = {}
@@ -296,48 +299,17 @@ class Wordle_Suggestor:
         completed_button = tk.Button(self.frame, text="Got the Wordle!", width=15, command=completed_wordle, background='lightgreen')
         completed_button.grid(row=6, column=7)
 
-        # round += 1
-        # a = input()
-        # while a != '1' and a != '2' and a != '3' and a != '4':
-        #     print("Please type '1' or '2' or '3' or '4': ")
-        #     a = input()
-        # while a == '3' or a == '4':
-        #     if a == '3':
-        #         # get a new suggested word (doesn't always get a different word)
-        #         rand_option = self.find_rand_suggestion(new_suggestions)
-        #         print(options_text)
-        #         print(f'Your suggested next word is {rand_option}.')
-        #         a = input()
-        #         while a != '1' and a != '2' and a != '3' and a != '4':
-        #             print("Please type '1' or '2' or '3' or '4': ")
-        #             a = input()
-        #     else:
-        #         # this dictionary does not match with Wordle's dictionary
-        #         all_words.remove(rand_option)  # remove the current suggestion from the list of suggestions
-        #
-        #         # recalculate the suggestions
-        #         new_suggestions = self.calculate_values(all_words, positions_to_check, find_positions, confirmed_positions)
-        #         if len(new_suggestions) == 0:
-        #             print("There are no suggested words available. Please double-check that you input your information "
-        #                   "correctly.")
-        #             exit(0)
-        #         rand_option = self.find_rand_suggestion(new_suggestions)
-        #         print(options_text)
-        #         print(f'Your recalculated suggested word is {rand_option}.')
-        #
-        #         a = input()
-        #         # how to check for options 3 here
-        #         while a != '1' and a != '2' and a != '3' and a != '4':
-        #             print("Please type '1' or '2' or '3' or '4': ")
-        #             a = input()
-        # if a == '2':
-        #     if round == 1:
-        #         print("Congratulations! You got the Wordle after 1 try!")
-        #     else:
-        #         print(f"Congratulations! You got the Wordle after {self.counter + 1} tries!")
-        #
-        # if round == num_letters:
-        #     print("You did not get the Wordle :(")
+        def invalid_suggestion():
+            if len(all_words) > 1:
+                all_words.remove(self.rand_option)
+                self.set_info_label(f"Invalid word\n'{self.rand_option}'\n removed from\ndictionary.")
+                self.process(all_words, num_letters, self.counter - 1)
+            else:
+                self.set_error_label(f"Cannot remove last\n word from dictionary.\nDouble check input.")
+
+        # add button for word not in dictionary
+        invalid_word_button = tk.Button(self.frame, text="Invalid Suggestion", width=20, command=invalid_suggestion, background='red')
+        invalid_word_button.grid(row=6, column=9)
 
 
     def gui_add_row(self, row_num: int, num_letters: int) -> None:
@@ -418,7 +390,7 @@ class Wordle_Suggestor:
 
         def helper() -> None:
 
-            # if every entry has a value and is not colored white (default bg color)
+            # if every entry has a single letter value and is not colored white (default bg color)
             if len(list(filter(lambda x: type(x) == tk.Entry and x.get().lower() in letter_list and x.cget('bg') != '#ffffff', self.frame.grid_slaves(self.counter)))) == num_letters:
                 self.error_label = None
                 self.info_label = None
