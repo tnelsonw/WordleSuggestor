@@ -37,7 +37,8 @@ class Wordle_Suggestor:
 
     def __init__(self):
         self.all_vars = list()
-        self.translation_table = str.maketrans('', '', 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ _.!<>')  # built to remove default values from StringVar names
+        # translation table built to remove default values from StringVar names
+        self.translation_table = str.maketrans('', '', 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ _.!<>')
         self.gui = None
         self.frame = None
         self.counter = 0
@@ -192,18 +193,6 @@ class Wordle_Suggestor:
         return v_dict[min(v_dict.keys())]
 
 
-    def print_init_guess(self, init_suggestion: str) -> None:
-        print(f'Try this word for your initial guess: {init_suggestion}')
-        print("Type '1' to continue. Or, for a different initial suggestion, type '2'.")
-
-
-    def print_welcome(self) -> None:
-        print("Welcome to the Wordle Suggestor!\n"
-              "Please enter the number of letters you would like for your wordle!\n"
-              "Valid number of letters are 5 and 6.\n"
-              "Afterwards, please follow the prompts for your word suggestion!")
-
-
     def load_gui_input(self, num_letters: int, row: int | None = None):
         """
         Load the input from the GUI
@@ -234,10 +223,12 @@ class Wordle_Suggestor:
 
 
     def process(self, all_words: List[str], num_letters: int, row: int | None = None):
-        # round = 0
-        # while round < num_letters + 1:
-
-        # guess_output = self.load_input(all_words, num_letters)
+        """
+        This function does the main body of work for this application.
+        :param all_words: All possible remaining words
+        :param num_letters: The number of letters for the word
+        :param row: The current row for input in the GUI
+        """
         guess_output = self.load_gui_input(num_letters, row)
         find_positions = {}
         confirmed_positions = {}
@@ -265,38 +256,34 @@ class Wordle_Suggestor:
             self.set_error_label("There are no suggested\nwords. Please double\ncheck the input.")
             exit(0)
 
-        options_text = ("Type '1' to continue to the next round or type '2' if you got the wordle! Type 3 to get a new "
-                        "suggested word. Type 4 only if the suggested word is not in the Wordle dictionary.")
-        print(f"There are {len(all_words)} possible words remaining.")
-        self.set_info_label(f"There are {len(all_words)} possible\nwords remaining.\nYour next suggestion is\n{self.rand_option}.")
-        print(options_text)
-        print(f'Your suggested next word is {self.rand_option}.')
+        self.set_info_label(f"There are {len(all_words)} possible\nwords remaining.\n"
+                            f"Your next suggestion is\n{self.rand_option}.")
 
         def new_suggestion():
-            # this dictionary does not match with Wordle's dictionary
-            # all_words.remove(self.rand_option)  # remove the current suggestion from the list of suggestions
-
-            # recalculate the suggestions
+            """
+            This dictionary does not match with Wordle's dictionary,
+            so recalculate the suggestions.
+            """
             new_suggestions = self.calculate_values(all_words, positions_to_check, find_positions, confirmed_positions)
             if len(new_suggestions) == 0:
                 print("There are no suggested words available. Please double check that you input your information "
                       "correctly.")
                 exit(0)
             self.rand_option = self.find_rand_suggestion(new_suggestions)
-            print(options_text)
-            print(f'Your recalculated suggested word is {self.rand_option}.')
             self.set_info_label(
                 f"There are {len(all_words)} possible\nwords remaining.\nYour next suggestion is\n{self.rand_option}.")
 
         # add button for new suggestion
-        suggestion_button = tk.Button(self.frame, text="New Suggestion", width=15, command=new_suggestion, background='yellow')
+        suggestion_button = tk.Button(self.frame, text="New Suggestion", width=15, command=new_suggestion,
+                                      background='yellow')
         suggestion_button.grid(row=6, column=5)
 
         def completed_wordle():
             self.info_label.after(1, self.info_label.destroy())
-            self.set_info_label(f"Congratulations!\nYou got the Wordle!")
+            self.set_info_label(f"      \nCongratulations!\nYou got the Wordle!\n     ")
 
-        completed_button = tk.Button(self.frame, text="Got the Wordle!", width=15, command=completed_wordle, background='lightgreen')
+        completed_button = tk.Button(self.frame, text="Got the Wordle!", width=15, command=completed_wordle,
+                                     background='lightgreen')
         completed_button.grid(row=6, column=7)
 
         def invalid_suggestion():
@@ -308,11 +295,17 @@ class Wordle_Suggestor:
                 self.set_error_label(f"Cannot remove last\n word from dictionary.\nDouble check input.")
 
         # add button for word not in dictionary
-        invalid_word_button = tk.Button(self.frame, text="Invalid Suggestion", width=20, command=invalid_suggestion, background='red')
+        invalid_word_button = tk.Button(self.frame, text="Invalid Suggestion", width=20, command=invalid_suggestion,
+                                        background='red')
         invalid_word_button.grid(row=6, column=9)
 
 
     def gui_add_row(self, row_num: int, num_letters: int) -> None:
+        """
+        Add all GUI elements to the window
+        :param row_num: The current row to add.
+        :param num_letters: The number of letters in this Wordle.
+        """
         l = tk.Label(self.frame, text=f"Guess {row_num + 1}")
         l.grid(row=row_num, column=0)
 
@@ -328,6 +321,12 @@ class Wordle_Suggestor:
             w.grid(row=row_num, column=i + 1)
 
             def selection_changed(var, var_num):
+                """
+                This function is called when a drop-down selection is changed.
+                When a selection is changed, it changes the label's color to match the selection.
+                :param var: The variable that changed.
+                :param var_num: The number of the corresponding variable.
+                """
                 if var_num == 1:
                     var_num = ''  # for first entry only
 
@@ -356,55 +355,59 @@ class Wordle_Suggestor:
 
 
     def main(self):
-        self.print_welcome()
+        main_window = tk.Tk()
+        main_window.title("Wordle Suggestor")
 
-        num_letters = int(input())
-        while num_letters != 5 and num_letters != 6:
-            print("Please input a valid number of letters. Either 5 or 6.\n")
-            num_letters = int(input())
+        def load(num_letters: int):
+            """
+            Load the words and new GUI window.
+            :param num_letters: The number of letters in this Wordle.
+            """
+            all_words: List[str] = self.load_dictionary(num_letters)
+            initial_suggestion = self.get_init_suggestion(num_letters)
 
-        all_words: List[str] = self.load_dictionary(num_letters)
-        initial_suggestion = self.get_init_suggestion(num_letters)
+            # gui section
+            self.gui = tk.Toplevel(main_window)
+            self.gui.grab_set()
+            self.gui.title("Wordle Suggestor")
+            self.frame = tk.Frame(self.gui)
+            self.frame.grid()
 
-        self.print_init_guess(initial_suggestion)
+            for i in range(6):  # 6 rows in Wordle
+                self.gui_add_row(i, num_letters)
 
-        option = input()
-        while option != '1':
-            while option != '1' and option != '2':
-                print("Please type '1' or '2': ")
-                option = input()
+            def helper() -> None:
 
-            if option == '2':
-                initial_suggestion = self.get_init_suggestion(num_letters)
-                self.print_init_guess(initial_suggestion)
-                option = input()
+                # if every entry has a single letter value and is not colored white (default bg color)
+                if len(list(filter(lambda x: type(x) == tk.Entry and x.get().lower() in letter_list and x.cget(
+                        'bg') != '#ffffff', self.frame.grid_slaves(self.counter)))) == num_letters:
+                    self.error_label = None
+                    self.info_label = None
+                    # load input here
+                    self.process(all_words, num_letters)
+                    self.counter += 1
+                else:  # invalid, send error message
+                    self.set_error_label("Only one alphabetical\ncharacter per entry\nand choose a color.")
 
-        # gui section
-        self.gui = tk.Tk()
-        self.gui.title("Wordle Suggestor")
-        self.frame = tk.Frame(self.gui)
-        self.frame.grid()
+            button = tk.Button(self.frame, text="Submit", width=8, command=helper, background='green')
+            button.grid(row=6)
+            self.set_info_label(f"Your first\nsuggested word is\n{initial_suggestion}")
 
-        for i in range(6):  # 6 rows in Wordle
-            self.gui_add_row(i, num_letters)
+        def assign5():
+            load(5)
 
-        def helper() -> None:
+        def assign6():
+            load(6)
 
-            # if every entry has a single letter value and is not colored white (default bg color)
-            if len(list(filter(lambda x: type(x) == tk.Entry and x.get().lower() in letter_list and x.cget('bg') != '#ffffff', self.frame.grid_slaves(self.counter)))) == num_letters:
-                self.error_label = None
-                self.info_label = None
-                # load input here
-                self.process(all_words, num_letters)
-                self.counter += 1
-            else:  # invalid, send error message
-                self.set_error_label("Only one alphabetical\ncharacter per entry\nand choose a color.")
+        label = tk.Label(text="Welcome to the Wordle Suggestor!\nPlease select the number of letters for the wordle!\n")
+        button5 = tk.Button(self.frame, text="5 Letter Wordle", command=assign5, background='green')
+        button6 = tk.Button(self.frame, text="6 Letter Wordle", command=assign6, background='green')
 
+        label.pack()
+        button5.pack()
+        button6.pack()
 
-        button = tk.Button(self.frame, text="Submit", width=8, command=helper, background='green')
-        button.grid(row=6)
-
-        self.gui.mainloop()
+        main_window.mainloop()
         # end gui section
 
 
