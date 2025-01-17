@@ -74,6 +74,7 @@ class Wordle_Suggestor:
         return max(Counter(word).values()) > 1
 
 
+    # This function is not used anymore now that the GUI exists
     def load_input(self, all_words: List[str], num: int) -> dict:
         """Takes all the possible words and the length of the word as input.
         Returns a dictionary with the 0-num position as the keys, and a list containing the color of the guess followed
@@ -279,7 +280,6 @@ class Wordle_Suggestor:
         suggestion_button.grid(row=6, column=5)
 
         def completed_wordle():
-            self.info_label.after(1, self.info_label.destroy())
             self.set_info_label(f"      \nCongratulations!\nYou got the Wordle!\n     ")
 
         completed_button = tk.Button(self.frame, text="Got the Wordle!", width=15, command=completed_wordle,
@@ -366,9 +366,15 @@ class Wordle_Suggestor:
             all_words: List[str] = self.load_dictionary(num_letters)
             initial_suggestion = self.get_init_suggestion(num_letters)
 
+            # kill the main window once the Wordle window is exited
+            def kill(self):
+                if main_window.winfo_exists():
+                    main_window.quit()
+
             # gui section
             self.gui = tk.Toplevel(main_window)
             self.gui.grab_set()
+            self.gui.bind("<Destroy>", kill)
             self.gui.title("Wordle Suggestor")
             self.frame = tk.Frame(self.gui)
             self.frame.grid()

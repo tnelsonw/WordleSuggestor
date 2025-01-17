@@ -5,31 +5,32 @@ for you!
 
 ## How to Run
 To run this text-based Wordle Suggestor, clone the repository and run `python suggestor.py`. 
-It runs with both 5-letter words and 6-letter words, so the first option it will ask you is if you are playing the traditional 
-5-letter Wordle or the alternate 6-letter version. Type the respective length of the word to get started.
+It runs with both 5-letter words and 6-letter words, so it will ask you if you are playing the traditional 
+5-letter Wordle or the alternate 6-letter version. Click the button with the corresponding length to get started.
 
-The program then suggests a couple of initial suggestions for the first word, but feel free to ignore them if you
-already have a strategy in place. Type "1" to continue  or "2" for a different initial suggestion. 
+![Main Window](main_window.png "Main Window")
 
-For each word you input, the program will first ask for the letter and then the color of the letter, not the entire
-word. For instance, if "irate" was your first guess, and "i" was yellow, "e" was green, and the rest of the letters
-were blank, you would type:
+The program then opens a new window and suggests an initial guess for the first word, but feel free to ignore them if you
+already have a strategy in place. The new window looks like this:
 
-`i`  
-`yellow`  
-`r`  
-`blank`  
-`a`  
-`blank`  
-`t`  
-`blank`  
-`e`  
-`green`
+![Wordle Window](wordle_window.png "Wordle Window")
 
-Note that you can replace "yellow" with "y", "green" with "g", and "blank" with "b" for the same results. 
+For each text entry in the Graphical User Interface (GUI), type exactly one letter. To the right of the entry,
+indicate whether that letter was colored Blank, Green, or Yellow. Do this for entry in the row. Then click 'Submit'.
+A few new buttons will appear at the bottom of the window.
 
-The program will then systematically eliminate words from the dictionary that are impossible based on the
+![Submitted Window](window_after_submit.png "Submitted Window")
+
+The program then systematically eliminates words from the dictionary that are impossible based on the
 letters and color values that were inputted and provide you a suggested word.
+
+You can get a new suggested word by clicking 'New Suggestion'. Note that it will not always give a new suggested word. 
+The program gives words based on the commonality of each letter. 
+
+Occasionally, this dictionary has words that are not in Wordle's official dictionary. If that is the case, click the
+'Invalid Suggestion' button. It will then remove that word and suggest a new one. 
+
+Once you have gotten the Wordle, you can click 'Got the Wordle!' or just exit the program. 
 
 ## Other Notes
 
